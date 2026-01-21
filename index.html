@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="tel"]::placeholder {
+            color: #aaa;
+        }
+
+        .gps-status {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .gps-status.loading {
+            color: #667eea;
+        }
+
+        .gps-status.success {
+            color: #27ae60;
+        }
+
+        .gps-status.error {
+            color: #e74c3c;
+        }
+
+        .gps-icon {
+            font-size: 20px;
+        }
+
+        .coords {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📍 Registro de Cliente</h1>
+        <p class="subtitle">Complete el formulario con sus datos</p>
+
+        <div class="success-message" id="successMessage">
+            ✓ ¡Registro enviado exitosamente!
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ✗ Error al enviar el formulario. Por favor intente nuevamente.
+        </div>
+
+        <div class="gps-status loading" id="gpsStatus">
+            <span class="gps-icon">📡</span>
+            <div>
+                <div>Obteniendo ubicación GPS...</div>
+                <div class="coords" id="coords"></div>
+            </div>
+        </div>
+
+        <form id="registroForm">
+            <div class="form-group">
+                <label for="cedula">Número de Cédula <span class="required">*</span></label>
+                <input type="text" id="cedula" name="cedula" required placeholder="Ej: 0912345678">
+            </div>
+
+            <div class="form-group">
+                <label for="telefono1">Teléfono 1 <span class="required">*</span></label>
+                <input type="tel" id="telefono1" name="telefono1" required placeholder="Ej: 0991234567">
+            </div>
+
+            <div class="form-group">
+                <label for="telefono2">Teléfono 2</label>
+                <input type="tel" id="telefono2" name="telefono2" placeholder="Ej: 0991234567 (Opcional)">
+            </div>
+
+            <div class="form-group">
+                <label for="nombreLocal">Nombre del Local <span class="required">*</span></label>
+                <input type="text" id="nombreLocal" name="nombreLocal" required placeholder="Ej: Tienda El Sol">
+            </div>
+
+            <button type="submit" id="submitBtn">Enviar Registro</button>
+        </form>
+    </div>
+
+    <script>
+        let latitud = null;
+        let longitud = null;
+
+        // Obtener ubicación GPS al cargar la página
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    latitud = position.coords.latitude;
+                    longitud = position.coords.longitude;
+                    
+                    const gpsStatus = document.getElementById('gpsStatus');
+                    const coords = document.getElementById('coords');
+                    
+                    gpsStatus.className = 'gps-status success';
+                    gpsStatus.innerHTML = `
+                        <span class="gps-icon">✓</span>
+                        <div>
+                            <div>Ubicación capturada correctamente</div>
+                            <div class="coords">Lat: ${latitud.toFixed(6)}, Lng: ${longitud.toFixed(6)}</div>
+                        </div>
+                    `;
+                },
+                function(error) {
+                    const gpsStatus = document.getElementById('gpsStatus');
+                    gpsStatus.className = 'gps-status error';
+                    
+                    let errorMsg = 'No se pudo obtener la ubicación';
+                    if (error.code === error.PERMISSION_DENIED) {
+                        errorMsg = 'Permiso de ubicación denegado. Por favor active el GPS y permita el acceso.';
+                    }
+                    
+                    gpsStatus.innerHTML = `
+                        <span class="gps-icon">✗</span>
+                        <div>${errorMsg}</div>
+                    `;
+                }
+            );
+        } else {
+            const gpsStatus = document.getElementById('gpsStatus');
+            gpsStatus.className = 'gps-status error';
+            gpsStatus.innerHTML = `
+                <span class="gps-icon">✗</span>
+                <div>Su navegador no soporta geolocalización</div>
+            `;
+        }
+
+        // Manejar el envío del formulario
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (latitud === null || longitud === null) {
+                alert('Por favor espere a que se capture la ubicación GPS antes de enviar.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            // Recopilar datos del formulario
+            const formData = {
+                cedula: document.getElementById('cedula').value,
+                telefono1: document.getElementById('telefono1').value,
+                telefono2: document.getElementById('telefono2').value,
+                nombreLocal: document.getElementById('nombreLocal').value,
+                latitud: latitud,
+                longitud: longitud,
+                timestamp: new Date().toISOString()
+            };
+
+            // URL de Google Apps Script para enviar los datos
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzU7XiJei5dm52wUGqKITb2H-NJ4syrac3Be_ivoc2d3cumuhQAxirteVc6z7o-cVFY/exec';
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                // Mostrar mensaje de éxito
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // Limpiar formulario
+                document.getElementById('registroForm').reset();
+                
+                // Restaurar botón
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Registro';
+                
+                // Ocultar mensaje después de 5 segundos
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 5000);
+            })
+            .catch(error => {
+                // Mostrar mensaje de error
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Registro';
+                
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
